@@ -12,7 +12,7 @@ pygame
 The main file to run the mp is mp1.py:
 
 ```
-usage: mp1.py [-h] [--method {bfs,astar,astar_corner,astar_multi,extra}] [--scale SCALE]
+usage: mp1.py [-h] [--method {bfs,astar,astar_corner,astar_multi,fast}] [--scale SCALE]
               [--fps FPS] [--human] [--save SAVE]
               filename
 ```
@@ -38,7 +38,7 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  --method {bfs,astar,astar_corner,astar_multi,extra}
+  --method {bfs,astar,astar_corner,astar_multi,fast}
                         search method - default bfs
   --scale SCALE         scale - default: 20
   --fps FPS             fps for the display - default 30

@@ -16,7 +16,7 @@ files and classes when code is run, so be careful to not modify anything else.
 # The path should be a list of tuples in the form (row, col) that correspond
 # to the positions of the path taken by your search algorithm.
 # maze is a Maze object based on the maze from the file specified by input filename
-# searchMethod is the search method specified by --method flag (bfs,dfs,astar,astar_multi,extra)
+# searchMethod is the search method specified by --method flag (bfs,dfs,astar,astar_multi,fast)
 
 def search(maze, searchMethod):
     return {
@@ -24,22 +24,8 @@ def search(maze, searchMethod):
         "astar": astar,
         "astar_corner": astar_corner,
         "astar_multi": astar_multi,
-        "extra": extra,
+        "fast": fast,
     }.get(searchMethod)(maze)
-
-
-def sanity_check(maze, path):
-    """
-    Runs check functions for part 0 of the assignment.
-
-    @param maze: The maze to execute the search on.
-    @param path: a list of tuples containing the coordinates of each state in the computed path
-
-    @return bool: whether or not the path pass the sanity check
-    """
-    # TODO: Write your code here
-    return False
-
 
 def bfs(maze):
     """
@@ -88,7 +74,7 @@ def astar_multi(maze):
     return []
 
 
-def extra(maze):
+def fast(maze):
     """
     Runs suboptimal search algorithm for part 4.
 

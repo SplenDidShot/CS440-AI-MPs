@@ -15,6 +15,7 @@ a representation of the maze that is exposed through a simple interface.
 
 import re
 import copy
+from collections import Counter
 
 class Maze:
     # Initializes the Maze object by reading the maze from a file
@@ -120,11 +121,6 @@ class Maze:
             dist = abs((prev[1]-cur[1])+(prev[0]-cur[0]))
             if dist > 1:
                 return "Not single hop"
-            # check for adjacent/nearly adjacent duplication
-            if i > 2:
-                path_portion = path[i-3: i]
-                if len(set(path_portion)) != len(path_portion):
-                    return "Duplication detected! duplicates are adjacent/nearly adjacent"
 
         # check whether it is valid move
         for pos in path:
@@ -139,8 +135,18 @@ class Maze:
         if not path[-1] in self.__objective:
             return "Last position is not goal"
 
-        # check for far apart duplication
+        # check for duplication
         if len(set(path)) != len(path):
-            return "Duplication detected! duplicates are far apart"
-
+            c = Counter(path)
+            dup_dots = [p for p in set(c.elements()) if c[p] >= 2]
+            for p in dup_dots:
+                indices = [i for i, dot in enumerate(path) if dot == p]
+                is_dup = True
+                for i in range(len(indices) - 1):
+                    for dot in path[indices[i]+1: indices[i + 1]]:
+                        if self.isObjective(dot[0], dot[1]):
+                            is_dup = False
+                            break
+                if is_dup:
+                    return "Unnecessary path detected"
         return "Valid"
