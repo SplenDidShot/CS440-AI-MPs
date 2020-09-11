@@ -203,23 +203,117 @@ def astar_multi(maze):
         row_diff = abs(point[0] - obj[0])
         col_diff = abs(point[1] - obj[1])
         additional_len = 0
-        if point[0]>obj[0]:
-            for i in range(1,row_diff):
+        for i in range(1, row_diff):
+            if point[0]>obj[0]:
                 if maze.isWall(point[0]-i,point[1]):
                     additional_len+=1
-        elif point[0]<obj[0]:
-            for i in range(1,row_diff):
+            elif point[0]<obj[0]:
                 if maze.isWall(point[0]+i,point[1]):
                     additional_len+=1
-
-        if point[1]>obj[1]:
-            for i in range(1,col_diff):
+        for i in range(1, col_diff):
+            if point[1]>obj[1]:
                 if maze.isWall(point[0],point[1]-i):
                     additional_len+=1
-        elif point[1]<obj[1]:
-            for i in range(1,col_diff):
+            elif point[1]<obj[1]:
                 if maze.isWall(point[0],point[1]+i):
                     additional_len+=1
+
+        seen = {}
+        path = {point: [point]}
+        searchQueue = [(manhattan(point, obj), point, obj)]
+        # searchStack = [(manhattan(point, obj), point, obj)]
+        heapify(searchQueue)
+        for i in range(STEP_LEN):
+            dist, currPoint, obj = heappop(searchQueue)
+            # dist, currPoint, obj = searchStack.pop()
+            if currPoint in seen:
+                i-=1
+                continue
+            else:
+                seen[currPoint] = True
+                if currPoint == obj:
+                    break
+                neighbors = maze.getNeighbors(currPoint[0], currPoint[1])
+                for n in neighbors:
+                    if n not in seen or len(path[n]) - 1 > len(path[currPoint]):
+                        path[n] = deepcopy(path[currPoint])
+                        path[n].append(n)
+                        heappush(searchQueue, (len(path[n]) - 1 + manhattan(n, obj), n, obj))
+                        # searchStack.append((len(path[n]) - 1 + manhattan(n, obj), n, obj))
+                        if n in seen:
+                            seen.pop(n)
+        additional_len += dist
+
+        if dist<= STEP_LEN:
+            return dist
+        else:
+            return row_diff + col_diff + path_len + additional_len
+
+
+    seen = {}
+    path = {}
+    objectives = maze.getObjectives()
+    startPoint = maze.getStart()
+    path[startPoint] = [startPoint]
+    searchQueue = [(dist_to_obj(0, startPoint, obj), startPoint, obj) for obj in objectives]
+    heapify(searchQueue)
+
+    while objectives:
+        dist, currPoint, obj = heappop(searchQueue)
+        if currPoint in seen:
+            continue
+        else:
+            seen[currPoint] = True
+            if currPoint == obj:
+                seen.clear()
+                objectives.remove(obj)
+                searchQueue = [(dist_to_obj(0, currPoint, o), currPoint, o) for o in objectives]
+                heapify(searchQueue)
+                continue
+
+            neighbors = maze.getNeighbors(currPoint[0], currPoint[1])
+            for n in neighbors:
+                if n not in seen or len(path[n]) - 1 > len(path[currPoint]):
+                    path[n] = deepcopy(path[currPoint])
+                    path[n].append(n)
+                    heappush(searchQueue, (dist_to_obj(len(path[n]) - 1, n, obj), n, obj))
+                    if n in seen:
+                        seen.pop(n)
+
+    return path[obj]
+
+
+def fast(maze):
+    """
+    Runs suboptimal search algorithm for part 4.
+
+    @param maze: The maze to execute the search on.
+
+    @return path: a list of tuples containing the coordinates of each state in the computed path
+    """
+    # TODO: Write your code here
+    def manhattan(point, obj):
+        return abs(point[0] - obj[0]) + abs(point[1] - obj[1])
+
+    def dist_to_obj(path_len, point, obj):
+        STEP_LEN = 15
+        row_diff = abs(point[0] - obj[0])
+        col_diff = abs(point[1] - obj[1])
+        additional_len = 0
+        for i in range(1, row_diff):
+            if point[0] > obj[0]:
+                if maze.isWall(point[0] - i, point[1]):
+                    additional_len += 1
+            elif point[0] < obj[0]:
+                if maze.isWall(point[0] + i, point[1]):
+                    additional_len += 1
+        for i in range(1, col_diff):
+            if point[1] > obj[1]:
+                if maze.isWall(point[0], point[1] - i):
+                    additional_len += 1
+            elif point[1] < obj[1]:
+                if maze.isWall(point[0], point[1] + i):
+                    additional_len += 1
 
         seen = {}
         path = {point: [point]}
@@ -242,8 +336,7 @@ def astar_multi(maze):
                         if n in seen:
                             seen.pop(n)
 
-        additional_len+=dist
-
+        additional_len += dist
         return row_diff + col_diff + path_len + additional_len
 
     seen = {}
@@ -276,17 +369,4 @@ def astar_multi(maze):
                     if n in seen:
                         seen.pop(n)
 
-
     return path[obj]
-
-
-def fast(maze):
-    """
-    Runs suboptimal search algorithm for part 4.
-
-    @param maze: The maze to execute the search on.
-
-    @return path: a list of tuples containing the coordinates of each state in the computed path
-    """
-    # TODO: Write your code here
-    return []
