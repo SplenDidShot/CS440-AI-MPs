@@ -32,4 +32,28 @@ def bfs(maze):
     This function returns optimal path in a list, which contains start and objective.
     If no path found, return None. 
     """
-    return []
+    from collections import deque
+    from copy import deepcopy
+    seen = {}
+    path = {}
+    searchQueue = deque()
+    startPoint = maze.getStart()
+    searchQueue.append(startPoint)
+    path[startPoint] = [startPoint]
+    while searchQueue:
+        currPoint = searchQueue.popleft()
+        if currPoint in seen:
+            continue
+        else:
+            seen[currPoint] = True
+
+            if maze.isObjective(currPoint[0], currPoint[1]):
+                return path[currPoint]
+
+            neighbors = maze.getNeighbors(currPoint[0], currPoint[1])
+            for n in neighbors:
+                if n not in path or len(path[n]) - 1 > len(path[currPoint]):
+                    path[n] = deepcopy(path[currPoint])
+                    path[n].append(n)
+            searchQueue.extend(neighbors)
+    return None
