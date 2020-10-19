@@ -36,7 +36,7 @@ def main(args):
     #Modify stemming and lower case below. Note that our test cases may use both settings of the two parameters
     train_set, train_labels, dev_set, dev_labels = reader.load_dataset(args.training_dir,args.development_dir,stemming=False,lower_case=False)
 
-    predicted_labels = nb.naiveBayes(train_set, train_labels, dev_set)
+    predicted_labels = nb.bigramBayes(train_set, train_labels, dev_set)
     accuracy, false_positive, false_negative, true_positive, true_negative = compute_accuracies(predicted_labels,dev_labels)
     print("Accuracy:",accuracy)
     print("False Positive", false_positive)
